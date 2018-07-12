@@ -17,7 +17,7 @@ RUN cd /experiment && \
     wget  -nv http://repairbenchmarks.cs.umass.edu/ManyBugs/scenarios/${SCENARIO_NAME}.tar.gz \
           -O scenario.tar.gz && \
     tar -xf scenario.tar.gz && \
-    mv ${SCENARIO_NAME} scenario
+    cp -R ${SCENARIO_NAME} scenario
 
 # Tidy-up the associated artefacts
 RUN cd scenario && \
@@ -30,19 +30,19 @@ RUN cd scenario && \
             *.debug.* \
             *~ \
             php.tar.gz && \
-    mv test.sh test.sh.orig && \
-    mv bug-failures bug-info && \
+    cp -R test.sh test.sh.orig && \
+    cp -R bug-failures bug-info && \
     cp bugged-program.txt manifest.txt && \
-    mv *.lines bug-info && \
-    mv fix-failures bug-info && \
+    cp -R *.lines bug-info && \
+    cp -R fix-failures bug-info && \
     cd ../ && \
-    mv scenario/* /experiment && \
+    cp -R scenario/* /experiment && \
     rm -rf scenario && \
     sudo chown -R docker /experiment && \
     grep -o -P '(?<=")[^"]+.phpt(?=")' php-run-tests.c > tests.all.txt && \
     grep -o -P '\d+(?= &&)' test.sh.orig > tests.indices.txt && \
     rm -f php-run-tests.c test.sh.orig && \
-    mv php src && \
+    cp -R php src && \
     cd src && \
     make distclean &> /dev/null && \
     rm -rf  configure config.nice autom4te.cache aclocal.m4 php5.spec missing mkinstalldirs
@@ -53,7 +53,7 @@ RUN cd scenario && \
 #     ../php-tests-tar.sh && \
 #     find . -name tests.tar.gz -print | \
 #       tar -cvf all-tests.tar --files-from - && \
-#     mv all-tests.tar /experiment/all-tests.tar
+#     cp -R all-tests.tar /experiment/all-tests.tar
 
 ARG bug_revision
 ENV BUG_REVISION "${bug_revision}"
@@ -69,7 +69,7 @@ RUN sudo chown docker /experiment/prepare.py && \
 
 # Rebuild tests
 # RUN cd src && \
-#     mv ../all-tests.tar . && \
+#     cp -R ../all-tests.tar . && \
 #     find . -name tests.tar.gz -exec tar -xf {} \;
 
 # Generate a better test harness
@@ -85,12 +85,12 @@ RUN sed -i "s#compile.pl#compile.sh#"           configuration-default && \
 
 # collect the tests from the ManyBugs archive
 RUN tar -xf scenario.tar.gz && \
-    mv php-bug* scenario && \
+    cp -R php-bug* scenario && \
     cd scenario/php && \
     find . -name tests.tar.gz -delete && \
     find . -name tests -type d | tar -czf all-tests.tar.gz --files-from - && \
     cd ../.. && \
-    mv scenario/php/all-tests.tar.gz src/all-tests.tar.gz && \
+    cp -R scenario/php/all-tests.tar.gz src/all-tests.tar.gz && \
     rm -rf scenario
 
 # unpack tests
